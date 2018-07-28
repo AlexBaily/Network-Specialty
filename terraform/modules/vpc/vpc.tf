@@ -5,6 +5,7 @@ variable "vpc_cidr"         {}
 variable "cidrs"            {}
 variable "azs"              {}
 variable "vpn_ip_address"   {}
+variable "static_vpn"       {}
 
 
 resource "aws_vpc" "vpc" {
@@ -60,7 +61,7 @@ resource "aws_vpn_connection" "main" {
   vpn_gateway_id      = "${aws_vpn_gateway.vpg.id}"
   customer_gateway_id = "${aws_customer_gateway.cgw.id}"
   type                = "ipsec.1"
-  static_routes_only  = true
+  static_routes_only  = "${var.static_vpn}"
 }
 
 resource "aws_vpn_connection_route" "Main_VPC" {

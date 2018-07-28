@@ -22,4 +22,5 @@ module "network" {
   cidrs            = "${var.cidrs}"
   vpn_ip_address   = "${var.vpn_ip_address}"
   static_vpn       = "${var.static_vpn}"
+
 }
