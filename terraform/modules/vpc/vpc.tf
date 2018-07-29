@@ -32,7 +32,7 @@ resource "aws_subnet" "public" {
 
 resource "aws_route_table" "public" {
   vpc_id           = "${aws_vpc.vpc.id}"
-
+  propagating_vgws = ["${aws_vpn_gateway.vgw.id}"]
   route {
       cidr_block = "0.0.0.0/0"
       gateway_id = "${aws_internet_gateway.public.id}"
@@ -45,11 +45,6 @@ resource "aws_vpn_gateway" "vgw" {
   tags {
     Name = "VGW to main VPC"
   }
-}
-
-resource "aws_vpn_gateway_route_propagation" "route_prop" {
-  vpn_gateway_id = "${aws_vpn_gateway.vgw.id}"
-  route_table_id = "${aws_route_table.public.id}"
 }
 
 resource "aws_customer_gateway" "cgw" {
