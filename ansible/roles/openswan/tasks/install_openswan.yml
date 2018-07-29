@@ -5,26 +5,26 @@
      name: openswan
      state: present
 
-- name: Edit sysctl.conf to enable ip_forward
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: 1
-    sysctl_set: yes
-    state: present
-    reload: yes
+ - name: Edit sysctl.conf to enable ip_forward
+   sysctl:
+     name: net.ipv4.ip_forward
+     value: 1
+     sysctl_set: yes
+     state: present
+     reload: yes
 
-- name: Edit sysctl.conf to disable rp_filter
-  sysctl:
-    name: net.ipv4.conf.default.rp_filter
-    value: 0
-    sysctl_set: yes
-    state: present
-    reload: yes
+ - name: Edit sysctl.conf to disable rp_filter
+   sysctl:
+     name: net.ipv4.conf.default.rp_filter
+     value: 0
+     sysctl_set: yes
+     state: present
+     reload: yes
 
-- name: Edit sysctl.conf to disable default accept source route
-  sysctl:
-    name: net.ipv4.conf.default.accept_source_route
-    value: 0
-    sysctl_set: yes
-    state: present
-    reload: yes
+ - name: Edit sysctl.conf to disable default accept source route
+   sysctl:
+     name: net.ipv4.conf.default.accept_source_route
+     value: 0
+     sysctl_set: yes
+     state: present
+     reload: yes

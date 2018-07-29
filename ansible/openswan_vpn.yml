@@ -1,0 +1,6 @@
+---
+- hosts: Openswan
+  become: yes
+  remote_user: ec2-user
+  roles:
+     - openswan

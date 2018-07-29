@@ -31,7 +31,7 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = "${aws_vpc.vpc.id}"
+  vpc_id           = "${aws_vpc.vpc.id}"
 
   route {
       cidr_block = "0.0.0.0/0"
@@ -39,12 +39,17 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_vpn_gateway" "vpg" {
+resource "aws_vpn_gateway" "vgw" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   tags {
-    Name = "VPG to main VPC"
+    Name = "VGW to main VPC"
   }
+}
+
+resource "aws_vpn_gateway_route_propagation" "route_prop" {
+  vpn_gateway_id = "${aws_vpn_gateway.vgw.id}"
+  route_table_id = "${aws_route_table.public.id}"
 }
 
 resource "aws_customer_gateway" "cgw" {
@@ -58,7 +63,7 @@ resource "aws_customer_gateway" "cgw" {
 }
 
 resource "aws_vpn_connection" "main" {
-  vpn_gateway_id      = "${aws_vpn_gateway.vpg.id}"
+  vpn_gateway_id      = "${aws_vpn_gateway.vgw.id}"
   customer_gateway_id = "${aws_customer_gateway.cgw.id}"
   type                = "ipsec.1"
   static_routes_only  = "${var.static_vpn}"
