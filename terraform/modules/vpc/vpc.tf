@@ -69,5 +69,35 @@ resource "aws_vpn_connection_route" "Main_VPC" {
   vpn_connection_id      = "${aws_vpn_connection.main.id}"
 }
 
+resource "aws_vpc_endpoint" "ec2" {
+  vpc_id            = "${aws_vpc.vpc.id}"
+  service_name      = "com.amazonaws.eu-west-1.ec2"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    "${aws_security_group.ec2_end.id}"
+  ]
+}
+
+resource "aws_security_group" "ec2_end" {
+  name   = "EC2 Interface Endpoint"
+  vpc_id = "${aws_vpc.vpc.id}"
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["172.20.0.0/16"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
+}
+
 output "vpc-id"     { value = "${aws_vpc.vpc.id}" }
 output "subnet_ids" { value = "${join(",", aws_subnet.public.*.id)}" }
