@@ -3,6 +3,7 @@
 variable "environment_name" {}
 variable "vpc_cidr"         {}
 variable "cidrs"            {}
+variable "priv_cidrs"       {}
 variable "azs"              {}
 variable "vpn_ip_address"   {}
 variable "static_vpn"       {}
@@ -40,6 +41,27 @@ resource "aws_route_table" "public" {
   }
 }
 
+resource "aws_subnet" "private" {
+  vpc_id            = "${aws_vpc.vpc.id}"
+  cidr_block        = "${element(split(",", var.priv_cidrs), count.index)}"
+  availability_zone = "${element(split(",", var.azs), count.index)}"
+  count             = 3
+
+  tags { Name = "${var.environment_name} Private ${element(split(",", var.azs), count.index)}" }
+}
+
+resource "aws_route_table" "private" {
+  vpc_id           = "${aws_vpc.vpc.id}"
+  propagating_vgws = ["${aws_vpn_gateway.vgw.id}"]
+
+}
+
+resource "aws_route_table_association" "private_routes" {
+  subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
+  route_table_id = "${aws_route_table.private.id}"
+  count          = 3
+}
+
 resource "aws_vpn_gateway" "vgw" {
   vpc_id = "${aws_vpc.vpc.id}"
 
@@ -71,9 +93,10 @@ resource "aws_vpn_connection_route" "Main_VPC" {
 }
 
 resource "aws_vpc_endpoint" "ec2" {
-  vpc_id            = "${aws_vpc.vpc.id}"
-  service_name      = "com.amazonaws.eu-west-1.ec2"
-  vpc_endpoint_type = "Interface"
+  vpc_id              = "${aws_vpc.vpc.id}"
+  service_name        = "com.amazonaws.eu-west-1.ec2"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true 
 
   security_group_ids = [
     "${aws_security_group.ec2_end.id}"
